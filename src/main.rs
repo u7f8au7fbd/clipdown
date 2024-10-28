@@ -1,3 +1,4 @@
+#![cfg_attr(windows, windows_subsystem = "windows")]
 use arboard::Clipboard;
 use chrono::Local;
 use image::ImageBuffer;
