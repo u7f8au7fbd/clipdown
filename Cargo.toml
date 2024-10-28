@@ -1,6 +1,6 @@
 [package]
 name = "clipdown"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["u7f8au7fbd <u7f8au7fbd@outlook.com>"]
 edition = "2021"
 
@@ -8,8 +8,11 @@ edition = "2021"
 image = "*"
 arboard = "*"
 rdev = "*"
-notify-rust = "*"
-winrt-notification="*"
+winrt-notification = "*"
+serde = "*"
+serde_json = "*"
+toml = "*"
+chrono = "*"
 [profile.dev]
 opt-level = 1
 [profile.dev.package."*"]
@@ -17,10 +20,10 @@ opt-level = 3
 
 [profile.release]
 opt-level = 3
-strip=true
+strip = true
 [profile.release.package."*"]
 opt-level = 3
 [[bin]]
-name="clipdown"
-path="src/main.rs"
-windows_subsystem="windows"
+name = "clipdown"
+path = "src/main.rs"
+windows_subsystem = "windows"
