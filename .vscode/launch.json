@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "args": [],
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=${workspaceFolderBasename}",
+          "--package=${workspaceFolderBasename}"
+        ],
+        "filter": {
+          "kind": "bin",
+          "name": "clipdown"
+        }
+      },
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PATH": "${env:USERPROFILE}/.rustup/toolchains/stable-x86_64-pc-windows-msvc/bin;${workspaceFolder}/target/debug/deps;${env:PATH}"
+      },
+      "name": "Debug",
+      "request": "launch",
+      "type": "lldb"
+    }
+  ],
+  "version": "0.2.0"
+}

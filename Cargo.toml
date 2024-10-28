@@ -1,0 +1,26 @@
+[package]
+name = "clipdown"
+version = "0.1.0"
+authors = ["u7f8au7fbd <u7f8au7fbd@outlook.com>"]
+edition = "2021"
+
+[dependencies]
+image = "*"
+arboard = "*"
+rdev = "*"
+notify-rust = "*"
+winrt-notification="*"
+[profile.dev]
+opt-level = 1
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+opt-level = 3
+strip=true
+[profile.release.package."*"]
+opt-level = 3
+[[bin]]
+name="clipdown"
+path="src/main.rs"
+windows_subsystem="windows"
