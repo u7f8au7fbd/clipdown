@@ -73,11 +73,17 @@ fn is_valid_toml(input: &str) -> bool {
 }
 
 fn save_clipboard_content() {
+    // クリップボードにアクセス
     let mut clipboard = Clipboard::new().expect("クリップボードへのアクセスに失敗しました");
     let download_dir = env::var("USERPROFILE").unwrap() + "\\Downloads\\";
 
     if let Ok(image) = clipboard.get_image() {
-        let output_path = generate_image_path(&download_dir, &image.bytes);
+        // 現在の日時を取得してファイル名を作成
+        let now = Local::now();
+        let timestamp = now.format("Img_%Y-%m-%d_%H-%M-%S-%3f").to_string();
+        let output_path = format!("{}{}.png", download_dir, timestamp);
+
+        // 画像バッファを作成して保存
         let buffer: ImageBuffer<image::Rgba<u8>, _> = ImageBuffer::from_raw(
             image.width as u32,
             image.height as u32,
@@ -86,47 +92,49 @@ fn save_clipboard_content() {
         .expect("画像バッファの作成に失敗しました");
         buffer.save(&output_path).expect("画像の保存に失敗しました");
 
+        // 通知表示
         show_notification(
             "保存完了",
             &format!("画像が保存されました: {}", output_path),
         );
     } else if let Ok(text) = clipboard.get_text() {
+        // 現在の日時を取得
+        let now = Local::now();
+        let timestamp = now.format("%Y-%m-%d_%H-%M-%S-%3f").to_string();
+
+        // JSONまたはTOMLの場合、日時を含むファイル名で保存する
         let (output_path, content) = if is_valid_json(&text) {
-            (download_dir.clone() + "Json.json", format_json(&text))
+            (
+                download_dir.clone() + &format!("Json_{}.json", timestamp),
+                format_json(&text),
+            )
         } else if is_valid_toml(&text) {
-            (download_dir.clone() + "Toml.toml", text)
+            (
+                download_dir.clone() + &format!("Toml_{}.toml", timestamp),
+                text,
+            )
         } else {
-            let now = Local::now();
-            let timestamp = now.format("Text_%Y-%m-%d_%H-%M-%S-%3f").to_string();
-            (download_dir + &format!("{}.txt", timestamp), text)
+            // 通常のテキストの場合
+            (download_dir + &format!("Text_{}.txt", timestamp), text)
         };
+
+        // ファイルの作成と書き込み
         let mut file = File::create(&output_path).expect("ファイルの作成に失敗しました");
         file.write_all(content.as_bytes())
             .expect("書き込みに失敗しました");
 
+        // 通知表示
         show_notification(
             "保存完了",
             &format!("テキストが保存されました: {}", output_path),
         );
     } else {
+        // クリップボードに画像もテキストも含まれていない場合の通知
         show_notification(
             "保存失敗",
             "クリップボードには画像もテキストも含まれていません",
         );
     }
-}
-
-fn generate_image_path(download_dir: &str, data: &[u8]) -> String {
-    let hash = calculate_hash(data);
-    format!("{}cb-img_{}.png", download_dir, hash)
-}
-
-fn calculate_hash(data: &[u8]) -> u64 {
-    use std::collections::hash_map::DefaultHasher;
-    use std::hash::{Hash, Hasher};
-    let mut hasher = DefaultHasher::new();
-    data.hash(&mut hasher);
-    hasher.finish()
 }
 
 fn show_notification(title: &str, text: &str) {
